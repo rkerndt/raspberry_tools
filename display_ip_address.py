@@ -26,7 +26,8 @@ except ImportError:
 
 if (ADDR_STR not in environ) or (len(environ[ADDR_STR]) == 0):
     grove_rgb_lcd.setRGB(*UO_YELLOW)
-    grove_rgb_lcd.setText('missing ip addr')
+    if 'reason' in environ:
+    grove_rgb_lcd.setText(environ['reason'])
 else:
     grove_rgb_lcd.setRGB(*UO_GREEN)
     grove_rgb_lcd.setText(environ[ADDR_STR])
