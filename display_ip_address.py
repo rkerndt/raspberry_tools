@@ -15,6 +15,8 @@ MODULE_PATH = '/home/pi/GrovePi/Software/Python/grove_rgb_lcd/grove_rgb_lcd.py'
 MODULE_NAME = 'grove_rgb_lcd'
 ADDR_STR = 'new_ip_address'
 
+print('entering display_ip_address.py')
+
 try:
     grove_rgb_lcd = imp.load_source(MODULE_NAME, MODULE_PATH)
 except ImportError:
@@ -24,7 +26,7 @@ except ImportError:
 
 if (ADDR_STR not in environ) or (len(environ[ADDR_STR]) == 0):
     grove_rgb_lcd.setRGB(*UO_YELLOW)
-    grove_rgb_lcd.setText('missing ip address')
+    grove_rgb_lcd.setText('missing ip addr')
 else:
     grove_rgb_lcd.setRGB(*UO_GREEN)
     grove_rgb_lcd.setText(environ[ADDR_STR])
