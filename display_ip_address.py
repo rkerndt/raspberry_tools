@@ -5,6 +5,7 @@ Rickie Kerndt <rkerndt@cs.uoregon.edu>
 
 from __future__ import print_function
 
+print('entering display_ip_address')
 UO_GREEN = (0,79,39)
 UO_YELLOW = (255,204,0)
 
@@ -26,7 +27,7 @@ except ImportError:
     msg = 'display_ip_address: failed to find %s module' % MODULE_NAME
     print(msg, file=stderr)
     exit(1)
-
+print('setting lcd to display ip address %s' % environ[ADDR_STR])
 grove_rgb_lcd.setRGB(*UO_GREEN)
 grove_rgb_lcd.setText(environ[ADDR_STR])
 exit(1)
