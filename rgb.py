@@ -103,6 +103,5 @@ class RGB_led:
         if GPIO.getmode() is None:
             GPIO.setmode(GPIO.BCM)
 
-        GPIO.cleanup(self.rgb)
         GPIO.setup(self.rgb, GPIO.OUT)
 
