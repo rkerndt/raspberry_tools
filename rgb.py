@@ -40,7 +40,7 @@ class RGB_led:
         """
         Terminates any cycling thread and turns off all led colors
         """
-        if self.cycle_thread:
+        if self._cycle_thread:
             self._cycle_stop()
 
         self._set(0,0,0)
