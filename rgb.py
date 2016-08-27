@@ -13,16 +13,19 @@ class RGB_led:
     instantiating the RBG_led class.
     """
 
+    BLINK_ON = 0.1
+    BLINK_OFF = 0.9
+
     def __init__(self, red_pin, green_pin, blue_pin):
         # LED CONFIG - Set GPIO Ports
-        self.red_pin = red_pin  # B22
-        self.blue_pin = blue_pin  # B21 Rev1  B27 Rev2
-        self.green_pin = green_pin  # B17
-        self.rgb = (self.red_pin, self.green_pin, self.blue_pin)
-        self.cycle_thread = None
-        self.cycling = False
+        self._red_pin = red_pin  # B22
+        self._blue_pin = blue_pin  # B21 Rev1  B27 Rev2
+        self._green_pin = green_pin  # B17
+        self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
+        self._cycle_thread = None
+        self._cycling = False
 
-        self.__init_gpio()
+        self._init_gpio()
         self.clear()
 
 
@@ -31,20 +34,54 @@ class RGB_led:
         Turns off leds and calls cleanup on pins.
         """
         self.clear()
-        GPIO.cleanup(self.rgb)
+        GPIO.cleanup(self._rgb)
 
     def clear(self):
         """
         Terminates any cycling thread and turns off all led colors
         """
         if self.cycle_thread:
-            self.cycle_stop()
+            self._cycle_stop()
 
-        GPIO.output(self.red_pin, 0)
-        GPIO.output(self.blue_pin, 0)
-        GPIO.output(self.green_pin, 0)
+        self._set(0,0,0)
 
-    def set(self, red, blue, green):
+    def red(self, blink=False):
+        """
+        set led to red
+        :param blink: True/False
+        """
+        if self._cycling:
+            self._cycle_stop()
+        if blink:
+            self._cycle_start( (1,0,0), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+        else:
+            self._set(1,0,0)
+
+    def green(self, blink=False):
+        """
+        set led to green with optional blink
+        :param blink: True/False
+        """
+        if self._cycling:
+            self._cycle_stop()
+        if blink:
+            self._cycle_start( (0,1,0), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+        else:
+            self._set(0,1,0)
+
+    def blue(self, blink=False):
+        """
+        set led to blue
+        :param blink: True/False
+        """
+        if self._cycling:
+            self._cycle_stop()
+        if blink:
+            self._cycle_start( (0,0,1), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+        else:
+            self._set(0,0,1)
+
+    def _set(self, red, blue, green):
         """
         Sets LED on or off
         :param red: 0 (off) | 1 (on)
@@ -55,23 +92,24 @@ class RGB_led:
             if color not in [0,1]:
                 raise ValueError
 
-        GPIO.output(self.red_pin, red)
-        GPIO.output(self.blue_pin, blue)
-        GPIO.output(self.green_pin, green)
+        GPIO.output(self._red_pin, red)
+        GPIO.output(self._blue_pin, blue)
+        GPIO.output(self._green_pin, green)
 
 
-    def cycle_start(self, rgb_a, rgb_b, interval):
+    def _cycle_start(self, rgb_a, rgb_b, interval1, interval2):
         """
         Cycles state of led colors rgb_a and rgb_b for interval seconds
         :param rgb_a: tuple (r,g,b)
         :param rgb_b: tuple (r,g,b)
-        :param interval: float seconds
+        :param interval1: float seconds with rgb_a set
+        :param interval2: float seconds with rgb_b set
         """
         self.cycling = True
-        self.cycle_thread = Thread(target=self.__cycle, args=(rgb_a, rgb_b, interval))
+        self.cycle_thread = Thread(target=self._cycle, args=(rgb_a, rgb_b, interval1, interval2))
         self.cycle_thread.start()
 
-    def cycle_stop(self):
+    def _cycle_stop(self):
         """
         Terminates thread cycling led color
         """
@@ -79,29 +117,31 @@ class RGB_led:
             self.cycling = False
             self.cycle_thread.join()
 
-    def __cycle(self, rgb_a, rgb_b, interval):
+    def _cycle(self, rgb_a, rgb_b, interval1, interval2):
         """
         Private method launched as thread to cycle led colors
         :param rgb_a:
         :param rgb_b:
-        :param interval:
+        :param interval1:
+        :param interval2:
         """
 
         while self.cycling:
-            self.set(*rgb_a)
-            time.sleep(interval)
-            self.set(*rgb_b)
-            time.sleep(interval)
+            self._set(*rgb_a)
+            time.sleep(interval1)
+            self._set(*rgb_b)
+            time.sleep(interval2)
 
-    def __init_gpio(self):
+    def _init_gpio(self):
         """
         Sets gpio for controlling pins connected to an RGB led. No assumptions are
         made about the pin numbering mode. The mode is first checked and set to BCM
         if found undefined. So, if you wish to use BOARD numbering mode, then set
         this mode prior to instantiating a RGB_led class.
         """
+        GPIO.setwarnings(False)
         if GPIO.getmode() is None:
             GPIO.setmode(GPIO.BCM)
 
-        GPIO.setup(self.rgb, GPIO.OUT)
+        GPIO.setup(self._rgb, GPIO.OUT)
 
