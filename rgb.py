@@ -23,9 +23,9 @@ class RGB_led:
 
     def __init__(self, red_pin, green_pin, blue_pin):
         # LED CONFIG - Set GPIO Ports
-        self._red_pin = red_pin  # B20
-        self._blue_pin = blue_pin  # B16
-        self._green_pin = green_pin  # B21
+        self._red_pin = red_pin  # B16
+        self._green_pin = green_pin  # B20
+        self._blue_pin = blue_pin  # B21
         self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
         self._cycle_thread = None
         self._cycling = False
@@ -91,7 +91,7 @@ class RGB_led:
         :param blue:  0 (off) | 1 (on)
         :param green:  0 (off) | 1 (on)
         """
-        for color in [red, blue, green]:
+        for color in [red, green, blue]:
             if color not in [0,1]:
                 raise ValueError
 
