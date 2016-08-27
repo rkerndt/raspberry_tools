@@ -23,9 +23,9 @@ class RGB_led:
 
     def __init__(self, red_pin, green_pin, blue_pin):
         # LED CONFIG - Set GPIO Ports
-        self._red_pin = red_pin  # B22
-        self._blue_pin = blue_pin  # B21 Rev1  B27 Rev2
-        self._green_pin = green_pin  # B17
+        self._red_pin = red_pin  # B20
+        self._blue_pin = blue_pin  # B16
+        self._green_pin = green_pin  # B21
         self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
         self._cycle_thread = None
         self._cycling = False
@@ -44,7 +44,7 @@ class RGB_led:
         """
         Terminates any cycling thread and turns off all led colors
         """
-        if self._cycle_thread:
+        if self._cycling:
             self._cycle_stop()
 
         self._set(*RGB_led.OFF)
@@ -77,14 +77,14 @@ class RGB_led:
         :param blink: True, FALSE
         """
         if color in RGB_led.COLORS:
-            if self._cycle_thread:
+            if self._cycling:
                 self._cycle_stop()
             if blink:
                 self._cycle_start( color, RGB_led.OFF, RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
             else:
                 self._set(*color)
 
-    def _set(self, red, blue, green):
+    def _set(self, red, green, blue):
         """
         Sets LEDs on or off
         :param red: 0 (off) | 1 (on)
@@ -116,10 +116,9 @@ class RGB_led:
         """
         Terminates thread cycling led color
         """
-        if self._cycle_thread:
-            self._cycling = False
-            self._cycle_thread.join()
-            self._cycle_thread = None
+        self._cycling = False
+        self._cycle_thread.join()
+        self._cycle_thread = None
 
     def _cycle(self, rgb_a, rgb_b, interval1, interval2):
         """
