@@ -152,4 +152,4 @@ class RGB_led:
         """
         String representation of led configuration
         """
-        return('RGB_led(%d,%d,%d' % (self._red_pin, self._green_pin, self._blue_pin))
+        return('RGB_led(%d,%d,%d)' % (self._red_pin, self._green_pin, self._blue_pin))
