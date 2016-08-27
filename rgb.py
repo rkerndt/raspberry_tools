@@ -23,9 +23,9 @@ class RGB_led:
 
     def __init__(self, red_pin, green_pin, blue_pin):
         # LED CONFIG - Set GPIO Ports
-        self._red_pin = red_pin  # B16
+        self._red_pin = red_pin  # B21
         self._green_pin = green_pin  # B20
-        self._blue_pin = blue_pin  # B21
+        self._blue_pin = blue_pin  # B16
         self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
         self._cycle_thread = None
         self._cycling = False
@@ -148,3 +148,8 @@ class RGB_led:
 
         GPIO.setup(self._rgb, GPIO.OUT)
 
+    def __repr__(self):
+        """
+        String representation of led configuration
+        """
+        return('RGB_led(%d,%d,%d' % (self._red_pin, self._green_pin, self._blue_pin))
