@@ -109,8 +109,8 @@ class RGB_led:
         :param interval2: float seconds with rgb_b set
         """
         self._cycling = True
-        self.cycle_thread = Thread(target=self._cycle, args=(rgb_a, rgb_b, interval1, interval2))
-        self.cycle_thread.start()
+        self._cycle_thread = Thread(target=self._cycle, args=(rgb_a, rgb_b, interval1, interval2))
+        self._cycle_thread.start()
 
     def _cycle_stop(self):
         """
