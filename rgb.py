@@ -7,14 +7,19 @@ from threading import Thread
 
 class RGB_led:
     """
-    Provides methods for manipulating leds on the Keyes RGB LED module.
+    Provides methods for manipulating leds on the RGB LED module.
     This will set GPIO mode to BCM if not already set. If you wish to
     use BOARD numbering then be sure to set BOARD mode prior to
     instantiating the RBG_led class.
     """
 
-    BLINK_ON = 0.1
+    BLINK_ON  = 0.1
     BLINK_OFF = 0.9
+    RED   = (1,0,0)
+    GREEN = (0,1,0)
+    BLUE  = (0,0,1)
+    OFF   = (0,0,0)
+    COLORS = (RED, GREEN, BLUE, OFF)
 
     def __init__(self, red_pin, green_pin, blue_pin):
         # LED CONFIG - Set GPIO Ports
@@ -24,7 +29,6 @@ class RGB_led:
         self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
         self._cycle_thread = None
         self._cycling = False
-
         self._init_gpio()
         self.clear()
 
@@ -43,47 +47,46 @@ class RGB_led:
         if self._cycle_thread:
             self._cycle_stop()
 
-        self._set(0,0,0)
+        self._set(*RGB_led.OFF)
 
     def red(self, blink=False):
         """
         set led to red
         :param blink: True/False
         """
-        if self._cycling:
-            self._cycle_stop()
-        if blink:
-            self._cycle_start( (1,0,0), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
-        else:
-            self._set(1,0,0)
+        self._color(RGB_led.RED, blink)
 
     def green(self, blink=False):
         """
         set led to green with optional blink
         :param blink: True/False
         """
-        if self._cycling:
-            self._cycle_stop()
-        if blink:
-            self._cycle_start( (0,1,0), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
-        else:
-            self._set(0,1,0)
+        self._color(RGB_led.GREEN, blink)
 
     def blue(self, blink=False):
         """
         set led to blue
         :param blink: True/False
         """
-        if self._cycling:
-            self._cycle_stop()
-        if blink:
-            self._cycle_start( (0,0,1), (0,0,0), RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
-        else:
-            self._set(0,0,1)
+        self._color(RGB_led.BLUE, blink)
+
+    def _color(self, color, blink=False):
+        """
+        Sets led to color and blinks if blink = True
+        :param color: one of RED, GREEN, BLUE
+        :param blink: True, FALSE
+        """
+        if color in RGB_led.COLORS:
+            if self._cycle_thread:
+                self._cycle_stop()
+            if blink:
+                self._cycle_start( color, RGB_led.OFF, RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+            else:
+                self._set(*color)
 
     def _set(self, red, blue, green):
         """
-        Sets LED on or off
+        Sets LEDs on or off
         :param red: 0 (off) | 1 (on)
         :param blue:  0 (off) | 1 (on)
         :param green:  0 (off) | 1 (on)
@@ -105,7 +108,7 @@ class RGB_led:
         :param interval1: float seconds with rgb_a set
         :param interval2: float seconds with rgb_b set
         """
-        self.cycling = True
+        self._cycling = True
         self.cycle_thread = Thread(target=self._cycle, args=(rgb_a, rgb_b, interval1, interval2))
         self.cycle_thread.start()
 
@@ -113,9 +116,10 @@ class RGB_led:
         """
         Terminates thread cycling led color
         """
-        if self.cycle_thread:
-            self.cycling = False
-            self.cycle_thread.join()
+        if self._cycle_thread:
+            self._cycling = False
+            self._cycle_thread.join()
+            self._cycle_thread = None
 
     def _cycle(self, rgb_a, rgb_b, interval1, interval2):
         """
@@ -126,7 +130,7 @@ class RGB_led:
         :param interval2:
         """
 
-        while self.cycling:
+        while self._cycling:
             self._set(*rgb_a)
             time.sleep(interval1)
             self._set(*rgb_b)
