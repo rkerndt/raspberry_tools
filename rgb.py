@@ -79,7 +79,8 @@ class RGB_led:
         if self._cycling:
             self._cycle_stop()
         if blink:
-            self._cycle_start( color, RGB_led.OFF, RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+            color_intervals = [ (color, RGB_led.BLINK_ON), (RGB_led.OFF, RGB_led.BLINK_OFF)]
+            self._cycle_start(color_intervals)
         else:
             self._set(*color)
 
@@ -92,23 +93,20 @@ class RGB_led:
         """
         for color in [red, green, blue]:
             if color not in [0,1]:
-                raise ValueErrorle
+                raise ValueError
 
         GPIO.output(self._red_pin, red)
         GPIO.output(self._blue_pin, blue)
         GPIO.output(self._green_pin, green)
 
 
-    def _cycle_start(self, rgb_a, rgb_b, interval1, interval2):
+    def _cycle_start(self, color_intervals):
         """
-        Cycles state of led colors rgb_a and rgb_b for interval seconds
-        :param rgb_a: tuple (r,g,b)
-        :param rgb_b: tuple (r,g,b)
-        :param interval1: float seconds with rgb_a set
-        :param interval2: float seconds with rgb_b set
-        """
+        Starts python Thread object to cycle led colors
+        :param color_intervals: list of tuples (color,seconds)
+       """
         self._cycling = True
-        self._cycle_thread = Thread(target=self._cycle, args=(rgb_a, rgb_b, interval1, interval2))
+        self._cycle_thread = Thread(target=self._cycle, args=(color_intervals))
         self._cycle_thread.start()
 
     def _cycle_stop(self):
@@ -119,20 +117,16 @@ class RGB_led:
         self._cycle_thread.join()
         self._cycle_thread = None
 
-    def _cycle(self, rgb_a, rgb_b, interval1, interval2):
+    def _cycle(self, color_intervals):
         """
         Private method launched as thread to cycle led colors
-        :param rgb_a:
-        :param rgb_b:
-        :param interval1:
-        :param interval2:
+        :param color_intervals: list of tuples (color,seconds)
         """
 
         while self._cycling:
-            self._set(*rgb_a)
-            time.sleep(interval1)
-            self._set(*rgb_b)
-            time.sleep(interval2)
+            for color, interval in color_intervals:
+                self._set(*color)
+                time.sleep(interval)
 
     def _init_gpio(self):
         """
