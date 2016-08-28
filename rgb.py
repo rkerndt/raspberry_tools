@@ -22,10 +22,18 @@ class RGB_led:
     COLORS = (RED, GREEN, BLUE, OFF)
 
     def __init__(self, red_pin, green_pin, blue_pin):
-        # LED CONFIG - Set GPIO Ports
-        self._red_pin = red_pin  # B21
-        self._green_pin = green_pin  # B20
-        self._blue_pin = blue_pin  # B16
+        """
+        Suggested pin usage (BCM numbering) for Raspberry Pi 3:
+            red = 21
+            green = 20
+            blue = 16
+        :param red_pin: GPIO pin number for red led
+        :param green_pin: GPIO pin number for green led
+        :param blue_pin: GPIO pin number for blue led
+        """
+        self._red_pin = red_pin
+        self._green_pin = green_pin
+        self._blue_pin = blue_pin
         self._rgb = (self._red_pin, self._green_pin, self._blue_pin)
         self._cycle_thread = None
         self._cycling = False
@@ -35,14 +43,14 @@ class RGB_led:
 
     def close(self):
         """
-        Turns off leds and calls cleanup on pins.
+        Turns off leds and calls GPIO cleanup on pins.
         """
         self.clear()
         GPIO.cleanup(self._rgb)
 
     def clear(self):
         """
-        Terminates any cycling thread and turns off all led colors
+        Turns of leds
         """
         if self._cycling:
             self._cycle_stop()
@@ -51,7 +59,7 @@ class RGB_led:
 
     def red(self, blink=False):
         """
-        set led to red
+        set led to red with optional blink
         :param blink: True/False
         """
         self._color(RGB_led.RED, blink)
@@ -65,7 +73,7 @@ class RGB_led:
 
     def blue(self, blink=False):
         """
-        set led to blue
+        set led to blue with optional blink
         :param blink: True/False
         """
         self._color(RGB_led.BLUE, blink)
