@@ -50,7 +50,7 @@ class RGB_led:
 
     def clear(self):
         """
-        Turns of leds
+        Turns off leds
         """
         if self._cycling:
             self._cycle_stop()
@@ -59,21 +59,21 @@ class RGB_led:
 
     def red(self, blink=False):
         """
-        set led to red with optional blink
+        Set led to red with optional blink
         :param blink: True/False
         """
         self._color(RGB_led.RED, blink)
 
     def green(self, blink=False):
         """
-        set led to green with optional blink
+        Set led to green with optional blink
         :param blink: True/False
         """
         self._color(RGB_led.GREEN, blink)
 
     def blue(self, blink=False):
         """
-        set led to blue with optional blink
+        Set led to blue with optional blink
         :param blink: True/False
         """
         self._color(RGB_led.BLUE, blink)
