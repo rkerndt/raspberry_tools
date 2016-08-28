@@ -76,13 +76,12 @@ class RGB_led:
         :param color: one of RED, GREEN, BLUE
         :param blink: True, FALSE
         """
-        if color in RGB_led.COLORS:
-            if self._cycling:
-                self._cycle_stop()
-            if blink:
-                self._cycle_start( color, RGB_led.OFF, RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
-            else:
-                self._set(*color)
+        if self._cycling:
+            self._cycle_stop()
+        if blink:
+            self._cycle_start( color, RGB_led.OFF, RGB_led.BLINK_ON, RGB_led.BLINK_OFF)
+        else:
+            self._set(*color)
 
     def _set(self, red, green, blue):
         """
@@ -93,7 +92,7 @@ class RGB_led:
         """
         for color in [red, green, blue]:
             if color not in [0,1]:
-                raise ValueError
+                raise ValueErrorle
 
         GPIO.output(self._red_pin, red)
         GPIO.output(self._blue_pin, blue)
