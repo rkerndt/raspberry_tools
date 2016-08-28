@@ -79,7 +79,7 @@ class RGB_led:
         if self._cycling:
             self._cycle_stop()
         if blink:
-            color_intervals = [ (color, RGB_led.BLINK_ON), (RGB_led.OFF, RGB_led.BLINK_OFF)]
+            color_intervals = [ (color, RGB_led.BLINK_ON), (RGB_led.OFF, RGB_led.BLINK_OFF) ]
             self._cycle_start(color_intervals)
         else:
             self._set(*color)
@@ -106,7 +106,7 @@ class RGB_led:
         :param color_intervals: list of tuples (color,seconds)
        """
         self._cycling = True
-        self._cycle_thread = Thread(target=self._cycle, args=(color_intervals))
+        self._cycle_thread = Thread(target=self._cycle, args=(color_intervals,))
         self._cycle_thread.start()
 
     def _cycle_stop(self):
